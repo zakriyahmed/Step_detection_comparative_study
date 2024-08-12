@@ -24,7 +24,7 @@ class LeeDataloader():
 
 
         
-            
+
 
 if __name__=='__main__':
     a = LeeDataloader('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train',True,True,True,True)

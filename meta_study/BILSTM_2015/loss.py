@@ -14,8 +14,8 @@ class BCEWithWeights(nn.Module):
 
     def forward(self,outputs,targets):
         #print(outputs[0].shape, targets[:,:,0].shape)
-        loss_s = self.criterion(outputs[0], targets[:,:,0])
-        loss_e = self.criterion(outputs[1], targets[:,:,1])
+        loss_s = self.criterion(outputs[:,:,0], targets[:,:,0])
+        loss_e = self.criterion(outputs[:,:,1], targets[:,:,1])
 
         w1 = torch.ones((targets.shape[0],targets.shape[1]),device=self.device)*self.ws0
         w1[[targets[:,:,0]==1]]=self.ws1

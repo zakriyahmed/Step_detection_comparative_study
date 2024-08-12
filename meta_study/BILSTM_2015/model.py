@@ -13,7 +13,7 @@ class BiLSTMModel(nn.Module):
     def forward(self, x):
         lstm_out, _ = self.lstm(x)  # lstm_out shape: (batch_size, sequence_length, hidden_size*2)
         out = self.fc(lstm_out)     # Apply FC layer to each time step, out shape: (batch_size, sequence_length, output_size)
-        out = self.softmax(out)     # Apply SoftMax to each time step
+        #out = self.softmax(out)     # Apply SoftMax to each time step
         return out
 
 # Model parameters

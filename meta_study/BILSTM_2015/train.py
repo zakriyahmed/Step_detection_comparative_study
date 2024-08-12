@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 
 
 from loss import BCEWithWeights
-from model import LSTM
+from model import BiLSTMModel as LSTM
 from dataloader import LSTMDataloader
 
 
@@ -38,7 +38,7 @@ class Train():
                 batch_input,batch_label = batch_input.to(self.device).float(),batch_label.to(self.device)
 
                 outputs = self.model(batch_input)
-                #print(outputs[0].shape,batch_label.shape)
+                #print(batch_input.shape,outputs.shape,batch_label.shape)
                 loss = criterion(outputs,batch_label)
 
                 loss.backward()
