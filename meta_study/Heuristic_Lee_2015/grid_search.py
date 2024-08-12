@@ -10,94 +10,112 @@ from dataloader import LeeDataloader
 
 
 # Helper functions
-def update_statistics(values):
-    if len(values)>0:
-        return np.mean(values), np.std(values)
-    else:
-        return 0,0
+class LeeDetector():
+    def __init__(self,alpha,beta,K,M) -> None:
+        self.alpha = alpha
+        self.beta = beta
+        self.K = K
+        self.M = M
 
-def detect_candidate(an_minus_1, an, an_plus_1, mean_a, sigma_a, alpha):
-    if an > max(an_minus_1, an_plus_1, mean_a + (sigma_a / alpha)):
-        return 'peak'
-    elif an < min(an_minus_1, an_plus_1,mean_a- (sigma_a/alpha)):
-        return 'valley'
-    else:
-        return 'intermediate'
-
-def update_peak(an, n):
-    global mean_p, sigma_p, recent_peaks
-    recent_peaks.append(n)
-    if len(recent_peaks) > M:
-        recent_peaks.pop(0)
-    intervals = np.diff(recent_peaks)
-    mean_p, sigma_p = update_statistics(intervals)
-
-def update_valley(an, n):
-    global mean_v, sigma_v, recent_valleys
-    recent_valleys.append(n)
-    if len(recent_valleys) > M:
-        recent_valleys.pop(0)
-    intervals = np.diff(recent_valleys)
-    mean_v, sigma_v = update_statistics(intervals)
-
-# Main step detection function
-def step_detection(data,labels):
-    global mean_a, sigma_a, mean_p, sigma_p, mean_v, sigma_v
-    count = 0
-    Sn = 'init'
-    np_index = nv_index = 0  # Initializing the indices of the last peak and valley
-    step_indices = []
-
-    magnitudes = np.linalg.norm(data, axis=1)
-
-    for n in range(1, len(magnitudes) - 1):
-        an = magnitudes[n]
-        an_minus_1 = magnitudes[n - 1]
-        an_plus_1 = magnitudes[n + 1]
+        self.mean_a = 0
         
-        # Update the step deviation
-        recent_samples = magnitudes[max(0, n - K):n + 1]
-        recent_labels = labels[max(0, n - K):n + 1,0]
+        self.sigma_a = 0  # Step deviation
+        self.mean_p = 0  # Average peak interval
+        self.sigma_p = 0  # Standard deviation of peak intervals
+        self.mean_v = 0  # Average valley interval
+        self.sigma_v = 0  # Standard deviation of valley intervals
 
-        Sc = detect_candidate(an_minus_1, an, an_plus_1, mean_a, sigma_a, alpha)
+        self.recent_peaks = []
+        self.recent_valleys = []
 
-        if Sc == 'peak':
-            if Sn == 'init':
-                Sn = 'peak'
-                update_peak(an, n)
-                np_index = n
-                mean_a = (magnitudes[np_index] + magnitudes[nv_index]) / 2
-            elif Sn == 'valley' and n - np_index > mean_p - sigma_p * beta:
-                Sn = 'peak'
-                update_peak(an, n)
-                np_index = n
-                mean_a = (magnitudes[np_index] + magnitudes[nv_index]) / 2
-            elif Sn == 'peak' and n - np_index <= mean_p - sigma_p * beta and an > magnitudes[np_index]:
-                update_peak(an, n)
-                np_index = n
-        elif Sc == 'valley':
-            if Sn == 'peak' and n - nv_index > mean_v - sigma_v * beta:
-                Sn = 'valley'
-                update_valley(an, n)
-                nv_index = n
-                count += 1
-                step_indices.append([np_index, nv_index])
-                mean_a = (magnitudes[np_index] + magnitudes[nv_index]) / 2
-            elif Sn == 'valley' and n - nv_index <= mean_v - sigma_v * beta and an < magnitudes[nv_index]:
-                update_valley(an, n)
-                nv_index = n
+    def update_statistics(self,values):
+        if len(values)>0:
+            return np.mean(values), np.std(values)
+        else:
+            return 0,0
         
-        # Update state
-        Sn = Sc if Sc != 'intermediate' else Sn
-        sigma_a = np.std(recent_samples)
-    return count, step_indices
+    def detect_candidate(self,an_minus_1, an, an_plus_1, mean_a, sigma_a, alpha):
+        if an > max(an_minus_1, an_plus_1, mean_a + (sigma_a / alpha)):
+            return 'peak'
+        elif an < min(an_minus_1, an_plus_1,mean_a- (sigma_a/alpha)):
+            return 'valley'
+        else:
+            return 'intermediate'
+    
+    def update_peak(self, n):
+        self.recent_peaks.append(n)
+        if len(self.recent_peaks) > self.M:
+            self.recent_peaks.pop(0)
+        intervals = np.diff(self.recent_peaks)
+        self.mean_p, self.sigma_p = self.update_statistics(intervals)
+
+    def update_valley(self, n):
+        
+        self.recent_valleys.append(n)
+        if len(self.recent_valleys) > self.M:
+            self.recent_valleys.pop(0)
+        intervals = np.diff(self.recent_valleys)
+        self.mean_v, self.sigma_v = self.update_statistics(intervals)
+
+    def step_detection(self,data,labels):
+        count = 0
+        Sn = 'init'
+        np_index = nv_index = 0  # Initializing the indices of the last peak and valley
+        step_indices = []
+
+        magnitudes = np.linalg.norm(data, axis=1)
+
+        for n in range(1, len(magnitudes) - 1):
+            an = magnitudes[n]
+            an_minus_1 = magnitudes[n - 1]
+            an_plus_1 = magnitudes[n + 1]
+            
+            # Update the step deviation
+            recent_samples = magnitudes[max(0, n - self.K):n + 1]
+            recent_labels = labels[max(0, n - self.K):n + 1,0]
+
+            Sc = self.detect_candidate(an_minus_1, an, an_plus_1, self.mean_a, self.sigma_a, self.alpha)
+
+            if Sc == 'peak':
+                if Sn == 'init':
+                    Sn = 'peak'
+                    self.update_peak(n)
+                    np_index = n
+                    self.mean_a = (magnitudes[np_index] + magnitudes[nv_index]) / 2
+                elif Sn == 'valley' and n - np_index > self.mean_p - self.sigma_p * self.beta:
+                    Sn = 'peak'
+                    self.update_peak(n)
+                    np_index = n
+                    self.mean_a = (magnitudes[np_index] + magnitudes[nv_index]) / 2
+                elif Sn == 'peak' and n - np_index <= self.mean_p - self.sigma_p * self.beta and an > magnitudes[np_index]:
+                    self.update_peak(n)
+                    np_index = n
+            elif Sc == 'valley':
+                if Sn == 'peak' and n - nv_index > self.mean_v - self.sigma_v * self.beta:
+                    Sn = 'valley'
+                    self.update_valley(n)
+                    nv_index = n
+                    count += 1
+                    step_indices.append([np_index, nv_index])
+                    self.mean_a = (magnitudes[np_index] + magnitudes[nv_index]) / 2
+                elif Sn == 'valley' and n - nv_index <= self.mean_v - self.sigma_v * self.beta and an < magnitudes[nv_index]:
+                    self.update_valley(n)
+                    nv_index = n
+            
+            # Update state
+            Sn = Sc if Sc != 'intermediate' else Sn
+            self.sigma_a = np.std(recent_samples)
+        return count, step_indices
+
+
+
 
 
 if __name__=="__main__":
-    alphas = [2,3,4,5,6,7,8]
-    betas = [2,3,4,5,6,7,8]
-    ks = [10,20,30,40,50,60,70,80]
-    Ms = [10,20,30,40,50,60,70,80]
+    alphas = [8]
+    betas = [5]
+    ks = [10,70]
+    Ms = [10,70,80]
 
     data_frame = {'alpha':[],'beta':[],'K':[],'M':[],'accuracy':[]}
     a = LeeDataloader('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test',ToFilter=True)
@@ -108,27 +126,12 @@ if __name__=="__main__":
         for beta in betas:
             for K in ks:
                 for M in Ms:
-
-                    #alpha = 4
-                    #beta = 4
-                    #K = 120  # Number of recent acceleration samples for step deviation
-                    #M = 60  # Number of recent peaks/valleys for interval statistics
-
-                    # Initialize parameters
-                    mean_a = 0  # Step average
-                    sigma_a = 0  # Step deviation
-                    mean_p = 0  # Average peak interval
-                    sigma_p = 0  # Standard deviation of peak intervals
-                    mean_v = 0  # Average valley interval
-                    sigma_v = 0  # Standard deviation of valley intervals
-
-                    # Placeholder for recent peaks and valleys
-                    recent_peaks = []
-                    recent_valleys = []
                     
-                    step_count, step_indices = step_detection(data[:,0:3],labels)
+                    b = LeeDetector(alpha,beta,K,M)
+                    
+                    step_count, step_indices = b.step_detection(data[:,0:3],labels)
 
-                    acc = (step_count/count_s)/100
+                    acc = (step_count/count_s)*100
 
                     data_frame['alpha'].append(alpha)
                     data_frame['beta'].append(beta)
@@ -138,7 +141,7 @@ if __name__=="__main__":
 
                     df = pd.DataFrame(data_frame)
                     print(df.tail(10))
-                    df.to_csv('grid_search.csv')
+                    df.to_csv('grid_search_test.csv')
 
 
 
