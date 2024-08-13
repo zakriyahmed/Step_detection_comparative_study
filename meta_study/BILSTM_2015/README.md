@@ -1,3 +1,4 @@
-                #An Advanced Method for Pedestrian Dead Reckoning using BLSTM-RNNs 
+##                An Advanced Method for Pedestrian Dead Reckoning using BLSTM-RNNs
+
                 
-                                Marcus Edel and Enrico Koppe
+###                                Marcus Edel and Enrico Koppe
