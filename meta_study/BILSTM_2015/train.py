@@ -65,7 +65,7 @@ class Test():
         self.ws0,self.we0,self.ws1,self.we1 = 0.739,0.739,1.548,1.548
         self.model = LSTM(input_size=4, hidden_size=5, num_layers=1).to(self.device)
         self.dataset = LSTMDataloader(self.root,ToFilter=True,AddMagnitude=True,AddGyro=False,normalize=True,window_size=500,stride=500,windowed_labels=True)
-        self.dataloader = DataLoader(self.dataset,batch_size=2048,shuffle=False)
+        self.dataloader = DataLoader(self.dataset,batch_size=1,shuffle=False)
         self.load()
 
     def load(self):
@@ -74,14 +74,17 @@ class Test():
     def test(self):
         sigmoid = nn.Sigmoid()
         start = True
+        print(len(self.dataloader))
         for test_input,test_label in self.dataloader:
             if start:
                 #print(test_input.shape)
                 test_input = test_input.float().to(self.device)
                 
-                logits_S,logits_E = self.model(test_input)
+                output = self.model(test_input)
+                
+                logits_S,logits_E = output[0,:,0],output[0,:,1]
                 logits_S, logits_E = sigmoid(logits_S),sigmoid(logits_E)
-
+                #print(output.shape,logits_E.shape)
                 logits_S[logits_S>=0.8] == 1
                 logits_S[logits_S<0.8] == 0
 
@@ -98,18 +101,19 @@ class Test():
                 #print(test_input.shape)
                 test_input = test_input.float().to(self.device)
                 
-                logits_S,logits_E = self.model(test_input)
+                output = self.model(test_input)
+                logits_S,logits_E = output[0,:,0],output[0,:,1]
                 logits_S, logits_E = sigmoid(logits_S),sigmoid(logits_E)
-
+                #print(output.shape,logits_E.shape)
                 logits_S[logits_S>=0.8] == 1
                 logits_S[logits_S<0.8] == 0
 
                 logits_E[logits_E>=0.8] == 1
                 logits_E[logits_E<0.8] == 0
                 
-                start_preds = torch.cat((start_preds,logits_S.clone().cpu().detach()),dim=1)
-                end_preds = torch.cat((end_preds,logits_E.clone().cpu().detach()),dim=1)
-                all_labels = torch.cat((all_labels,test_label.clone().cpu().detach()),dim=1)
+                start_preds = torch.cat((start_preds,logits_S.clone().cpu().detach()),dim=0)
+                end_preds = torch.cat((end_preds,logits_E.clone().cpu().detach()),dim=0)
+                all_labels = torch.cat((all_labels,test_label.clone().cpu().detach()),dim=0)
 
 
         return start_preds,end_preds

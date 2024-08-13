@@ -17,6 +17,7 @@ def remove_small_brusts(tensor,min_length):
     
     for start, end in zip(change_points[:-1], change_points[1:]):
         segment = tensor[start:end]
+        #print(segment[0])
         if segment[0] == 1 and len(segment) < min_length:
             result[start:end] = 0  # Replace short sequences of 1s with 0s
     
