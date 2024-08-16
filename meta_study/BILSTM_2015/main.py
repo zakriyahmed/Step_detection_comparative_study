@@ -1,6 +1,7 @@
 import torch
 import pandas as pd # type: ignore
-
+import os
+print(os.getcwd())
 
 from train import Train, Test
 import utils

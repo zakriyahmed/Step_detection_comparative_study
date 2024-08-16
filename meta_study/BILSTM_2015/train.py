@@ -24,8 +24,8 @@ class Train():
         self.loss_history_epoch = []
         self.acc_history_epoch = []
         files = os.listdir()
-        if 'BILSTM_2015_30_epochs.pt' in files:
-            self.model = torch.load('BILSTM_2015_30_epochs.pt')
+        if f'BILSTM_2015_{self.epochs}_epochs.pt' in files:
+            self.model = torch.load(f'BILSTM_2015_{self.epochs}_epochs.pt')
 
     def train(self):
         self.model = self.model.train().to(self.device)
@@ -57,7 +57,7 @@ class Train():
 
                 if epoch%10 == 0:
                     self.save_model()
-                    b = Test('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test','cuda',0.001,30)
+                    b = Test('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test','cuda',0.001,self.epochs)
                     start,_,Tstart = b.test()
                     acc = b.count_accuracy(start,Tstart)
                     self.acc_history_epoch.append(acc)
