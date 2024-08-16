@@ -20,7 +20,7 @@ class Train():
         self.ws0,self.we0,self.ws1,self.we1 = 1,1,1,1
         self.model = LSTM(input_size=4, hidden_size=5, num_layers=1)
         self.dataset = LSTMDataloader(self.root,ToFilter=True,AddMagnitude=True,AddGyro=False,normalize=True,window_size=500,stride=1,windowed_labels=True)
-        self.dataloader = DataLoader(self.dataset,batch_size=1024,shuffle=True)
+        self.dataloader = DataLoader(self.dataset,batch_size=128,shuffle=True)
         self.loss_history_epoch = []
         self.acc_history_epoch = []
         files = os.listdir()

@@ -7,7 +7,7 @@ import utils
 
 if __name__=='__main__':
 
-    a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.01,30)
+    a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.001,300)
     a.train()
     a.save_model()
 
