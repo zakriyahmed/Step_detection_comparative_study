@@ -48,7 +48,7 @@ class Train():
 
                     outputs = self.model(batch_input)
                     #print(batch_input.shape,outputs.shape,batch_label.shape)
-                    loss = criterion(outputs,batch_label)
+                    loss = criterion(outputs[:,0],batch_label.float())
 
                     loss.backward()
                     optimizer.step()
@@ -66,7 +66,8 @@ class Train():
                     self.acc_history_epoch.append(acc)
                     print(f'Epoch: {epoch},    Acc: {acc}')
             return self.model,self.loss_history_epoch
-        except:
+        except Exception as e:
+            print(e)
             print('Interrupted. Saving model')
             np.save('loss.npy',np.array(self.loss_history_epoch))
             np.save('Acc.npy',np.array(self.acc_history_epoch))
@@ -75,3 +76,7 @@ class Train():
     def save_model(self):
         torch.save(self.model,f"BASIL_2020_{self.epochs}_epochs.pt")
         
+
+"""a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.001,21)
+a.train()
+"""
