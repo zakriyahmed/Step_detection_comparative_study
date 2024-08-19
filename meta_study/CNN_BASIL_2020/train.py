@@ -60,8 +60,8 @@ class Train():
 
                 if epoch%10 == 0:
                     self.save_model()
-                    b = Test('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test','cuda',0.001,self.epochs)
-                    start,Tstart = b.test()
+                    b = Test('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test','cuda',0.001,self.epochs,during_training=True)
+                    start,Tstart,_,_ = b.test()
                     acc = b.count_accuracy(start,Tstart)
                     self.acc_history_epoch.append(acc)
                     print(f'Epoch: {epoch},    Acc: {acc}')
