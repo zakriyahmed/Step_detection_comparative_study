@@ -15,9 +15,10 @@ class Test():
         self.root = root
         self.device = device
         self.epochs = epochs
+        self.during_training = during_training
         self.learning_rate = learning_rate
         self.window_size = 160
-        if during_training==True:
+        if self.during_training==True:
             self.stride = 160
         else:
             self.stride = 1

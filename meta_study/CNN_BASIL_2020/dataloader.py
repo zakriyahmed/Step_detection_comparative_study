@@ -27,7 +27,7 @@ class CNNDataloader(Dataset):
         base_data = BaseDataLoader(self.root,self.ToFilter,self.AddMagnitude,self.AddGyro,self.normalize,self.relaxed_labels)
 
         data,labels = base_data.data,base_data.labels
-        self.first_step = np.nonzero(labels[:,0]).min()
+        self.first_step = np.nonzero(labels[:,0])[0].min()
         data = torch.tensor(data)
         labels = torch.tensor(labels)
 
