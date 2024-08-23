@@ -50,10 +50,10 @@ class Test():
                 step_delta = int(count) - prev_pred_steps
                 prev_pred_steps = int(count)
 
-                if step_delta > 0:
+                if step_delta > 0 and i < self.dataset.windows_labels.shape[0]-self.window_size-self.first_step:
                     for j in range(step_delta):
                         pred_step_start_indices.append(self.first_step - int(self.window_size/2) + self.stride* i)
-                        pred_step_end_indices.append((self.first_step - int(self.window_size/2) + self.stride* i)+1)
+                        pred_step_end_indices.append((self.first_step - int(self.window_size/2) + self.stride* i +1))
 
             
         start = torch.zeros((self.dataset.windows_labels.shape[0]))
