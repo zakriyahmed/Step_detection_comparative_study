@@ -53,11 +53,14 @@ class Test():
                 if step_delta > 0:
                     for j in range(step_delta):
                         pred_step_start_indices.append(self.first_step - int(self.window_size/2) + self.stride* i)
-                        pred_step_end_indices.append((self.first_step - int(self.window_size/2) + self.stride* i)-1)
+                        pred_step_end_indices.append((self.first_step - int(self.window_size/2) + self.stride* i)+1)
 
             
-
-        return count,true_count,pred_step_start_indices,pred_step_end_indices
+        start = torch.zeros((self.dataset.windows_labels.shape[0]))
+        end = torch.zeros((self.dataset.windows_labels.shape[0]))
+        start[[pred_step_end_indices]] = 1
+        end[[pred_step_end_indices]] = 1
+        return count,true_count,start,end
     
     def count_accuracy(self,start_count,true_start_count):
         
