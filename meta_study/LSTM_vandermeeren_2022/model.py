@@ -35,7 +35,19 @@ class LSTM(nn.Module):
         end_output = out[:, :, 1]    # (batch_size, sequence_length)
         
         return start_output, end_output
-
+    
+    def zeros(self,x):
+        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
+        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
+        return h0,c0
+    
+    def testing(self,x,h0,c0):
+        out, (h0,c0) = self.lstm(x,(h0,c0))
+        out = self.fc(out)
+        start_output = out[:, :, 0]  # (batch_size, sequence_length)
+        end_output = out[:, :, 1]    # (batch_size, sequence_length)
+        
+        return start_output, end_output, (h0,c0)
 
 #model = LSTM(3,400,2,0.2)
 #input = torch.zeros((10,200,3))

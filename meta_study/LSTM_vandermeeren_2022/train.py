@@ -78,8 +78,8 @@ class Test():
             if start:
                 #print(test_input.shape)
                 test_input = test_input.float().to(self.device)
-                
-                logits_S,logits_E = self.model(test_input)
+                h0,c0 = self.model.zeros()
+                logits_S,logits_E,h0,c0 = self.model.testing(test_input,h0,c0)
                 logits_S, logits_E = sigmoid(logits_S),sigmoid(logits_E)
 
                 logits_S[logits_S>=0.8] == 1
@@ -98,7 +98,7 @@ class Test():
                 #print(test_input.shape)
                 test_input = test_input.float().to(self.device)
                 
-                logits_S,logits_E = self.model(test_input)
+                logits_S,logits_E,h0,c0 = self.model.testing(test_input,h0,c0)
                 logits_S, logits_E = sigmoid(logits_S),sigmoid(logits_E)
 
                 logits_S[logits_S>=0.8] == 1
