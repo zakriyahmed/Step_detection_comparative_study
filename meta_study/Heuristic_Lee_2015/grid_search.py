@@ -138,9 +138,9 @@ if __name__=="__main__":
                     data_frame['K'].append(K)
                     data_frame['M'].append(M)
                     data_frame['accuracy'].append(acc)
-
+                    print(f"alpha:{alpha} , beta:{beta} , K:{K} , M:{M}, acc:{acc}")
                     df = pd.DataFrame(data_frame)
-                    print(df.tail(10))
+                    
                     df.to_csv('grid_search_new.csv')
 
 
