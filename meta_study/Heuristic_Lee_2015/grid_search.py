@@ -100,7 +100,7 @@ class LeeDetector():
                     self.mean_a = (magnitudes[np_index] + magnitudes[nv_index]) / 2
                 elif Sn == 'valley' and n - nv_index <= self.mean_v - self.sigma_v * self.beta and an < magnitudes[nv_index]:
                     self.update_valley(n)
-                    nv_index = n
+                    #nv_index = n
             
             # Update state
             Sn = Sc if Sc != 'intermediate' else Sn
@@ -112,13 +112,13 @@ class LeeDetector():
 
 
 if __name__=="__main__":
-    alphas = [8]
-    betas = [5]
-    ks = [10,70]
-    Ms = [10,70,80]
+    alphas = [6,7,8,9,10]
+    betas = [4,5,3]
+    ks = [10,20,30,40,50,60,70,80]
+    Ms = [60,70,80]
 
     data_frame = {'alpha':[],'beta':[],'K':[],'M':[],'accuracy':[]}
-    a = LeeDataloader('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test',ToFilter=True)
+    a = LeeDataloader('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train',ToFilter=True)
     data = a.data
     labels = a.label
     count_s = np.count_nonzero(labels[:,0])
@@ -129,7 +129,7 @@ if __name__=="__main__":
                     
                     b = LeeDetector(alpha,beta,K,M)
                     
-                    step_count, step_indices = b.step_detection(data[:,0:3],labels)
+                    step_count, step_indices = b.step_detection(data[50:,0:3],labels)
 
                     acc = (step_count/count_s)*100
 
@@ -141,7 +141,7 @@ if __name__=="__main__":
 
                     df = pd.DataFrame(data_frame)
                     print(df.tail(10))
-                    df.to_csv('grid_search_test.csv')
+                    df.to_csv('grid_search_new.csv')
 
 
 
