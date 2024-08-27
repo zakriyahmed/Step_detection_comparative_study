@@ -63,4 +63,4 @@ for value,i in zip(pred,range(len(pred))):
 prediction = pred_windows.reshape(-1,2)
 df = {'start':prediction[:,0],'end':prediction[:,1]}
 df = pd.DataFrame(df)
-df.to_csv('prediction.csv')
+df.to_csv('pred.csv')
