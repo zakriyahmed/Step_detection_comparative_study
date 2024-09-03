@@ -83,6 +83,10 @@ class Test():
         self.ws0,self.we0,self.ws1,self.we1 = 0.739,0.739,1.548,1.548
         self.model = LSTM(input_size=4, hidden_size=5, num_layers=1).to(self.device)
         self.dataset = LSTMDataloader(self.root,ToFilter=True,AddMagnitude=True,AddGyro=False,normalize=True,window_size=500,stride=500,windowed_labels=True)
+        self.ground_labels = self.dataset.ground_labels
+        self.activity = self.dataset.activity
+        self.sensor_labels = self.dataset.sensor_labels
+        
         self.dataloader = DataLoader(self.dataset,batch_size=1,shuffle=False)
         self.load()
 

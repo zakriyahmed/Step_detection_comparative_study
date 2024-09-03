@@ -24,14 +24,16 @@ class CNNDataloader(Dataset):
         self.windowed_labels  = windowed_labels
         self.relaxed_labels = relaxed_labels
 
-        base_data = BaseDataLoader(self.root,self.ToFilter,self.AddMagnitude,self.AddGyro,self.normalize,self.relaxed_labels)
+        base_data = BaseDataLoader(self.root,self.ToFilter,self.AddMagnitude,self.AddGyro,self.normalize,self.relaxed_labels,sensor='all')
 
         data,labels = base_data.data,base_data.labels
         self.first_step = np.nonzero(labels[:,0])[0].min()
         data = torch.tensor(data)
         labels = torch.tensor(labels)
 
-        
+        self.sensor_labels = base_data.sensor_labels
+        self.activity = base_data.activity
+        self.ground_labels = base_data.labels
 
         #print(data.shape,labels.shape)
 

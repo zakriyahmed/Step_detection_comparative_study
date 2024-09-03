@@ -18,13 +18,15 @@ class LeeDataloader():
         self.AddGyro = AddGyro
         self.normalize = normalize
 
-        base_data = BaseDataLoader(self.root,self.ToFilter,self.AddMagnitude,self.AddGyro,self.normalize)
+        base_data = BaseDataLoader(self.root,self.ToFilter,self.AddMagnitude,self.AddGyro,self.normalize,sensor='all')
 
         self.data,self.label = base_data.data,base_data.labels
+        self.sensor_map = base_data.sensor_map
+        self.sensor_labels = base_data.sensor_labels
 
 
         
 
 
 if __name__=='__main__':
-    a = LeeDataloader('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train',True,True,True,True)
+    a = LeeDataloader('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train',True,False,False,False)

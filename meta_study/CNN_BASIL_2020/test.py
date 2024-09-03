@@ -25,6 +25,9 @@ class Test():
         self.model = CNN(window_size=self.window_size,total_features=3).to(self.device)
         self.dataset = CNNDataloader(self.root,ToFilter=True,AddMagnitude=False,AddGyro=False,normalize=True,window_size=self.window_size,stride=self.stride,windowed_labels=True)
         self.first_step = self.dataset.first_step
+        self.ground_labels = self.dataset.ground_labels
+        self.activity = self.dataset.activity
+        self.sensor_labels = self.dataset.sensor_labels
         self.dataloader = DataLoader(self.dataset,batch_size=1,shuffle=False)
         self.load()
 

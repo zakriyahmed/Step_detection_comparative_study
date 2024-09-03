@@ -17,6 +17,8 @@ if __name__ == '__main__':
 
     data = a.data
     labels = a.label
+    data = np.concatenate((data[50:159200],data[159400:]),axis=0)
+    labels = np.concatenate((labels[50:159200],labels[159400:]),axis=0)
     count_s = np.count_nonzero(labels[:,0])
 
     df = pd.read_csv('grid_search.csv')

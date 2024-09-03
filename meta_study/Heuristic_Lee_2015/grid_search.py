@@ -35,6 +35,7 @@ class LeeDetector():
             return 0,0
         
     def detect_candidate(self,an_minus_1, an, an_plus_1, mean_a, sigma_a, alpha):
+        
         if an > max(an_minus_1, an_plus_1, mean_a + (sigma_a / alpha)):
             return 'peak'
         elif an < min(an_minus_1, an_plus_1,mean_a- (sigma_a/alpha)):
@@ -75,7 +76,7 @@ class LeeDetector():
             recent_labels = labels[max(0, n - self.K):n + 1,0]
 
             Sc = self.detect_candidate(an_minus_1, an, an_plus_1, self.mean_a, self.sigma_a, self.alpha)
-
+            #print(Sc,np_index,nv_index)
             if Sc == 'peak':
                 if Sn == 'init':
                     Sn = 'peak'
@@ -100,7 +101,7 @@ class LeeDetector():
                     self.mean_a = (magnitudes[np_index] + magnitudes[nv_index]) / 2
                 elif Sn == 'valley' and n - nv_index <= self.mean_v - self.sigma_v * self.beta and an < magnitudes[nv_index]:
                     self.update_valley(n)
-                    #nv_index = n
+                    nv_index = n
             
             # Update state
             Sn = Sc if Sc != 'intermediate' else Sn
@@ -112,15 +113,17 @@ class LeeDetector():
 
 
 if __name__=="__main__":
-    alphas = [6,7,8,9,10]
-    betas = [4,5,3]
-    ks = [10,20,30,40,50,60,70,80]
-    Ms = [60,70,80]
+    alphas = [10,11,12,13]
+    betas = [5,6,7,8]
+    ks = [80,90,100,110]
+    Ms = [80,90,100,110]
 
     data_frame = {'alpha':[],'beta':[],'K':[],'M':[],'accuracy':[]}
     a = LeeDataloader('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train',ToFilter=True)
     data = a.data
     labels = a.label
+    #data = np.concatenate((data[50:159200],data[159400:]),axis=0)
+    #labels = np.concatenate((labels[50:159200],labels[159400:]),axis=0)
     count_s = np.count_nonzero(labels[:,0])
     for alpha in alphas:
         for beta in betas:
@@ -141,16 +144,7 @@ if __name__=="__main__":
                     print(f"alpha:{alpha} , beta:{beta} , K:{K} , M:{M}, acc:{acc}")
                     df = pd.DataFrame(data_frame)
                     
-                    df.to_csv('grid_search_new.csv')
-
-
-
-
-
-
-
-
-
+                    df.to_csv('grid_search_new_all_sensor.csv')
 
 
 

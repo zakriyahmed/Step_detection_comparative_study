@@ -7,7 +7,7 @@ import numpy as np
 
 
 class BaseDataLoader():
-    def __init__(self, root,ToFilter=False,AddMagnitude=True,AddGyro=True,normalize=True,relax=False):
+    def __init__(self, root,ToFilter=False,AddMagnitude=True,AddGyro=True,normalize=True,relax=False,sensor = 'hand'):
         self.root = root
         self.individuals = os.listdir(self.root)
         self.ToFilter = ToFilter
@@ -17,11 +17,31 @@ class BaseDataLoader():
         self.relax = relax
         self.sos = S.butter(3, 3, 'lp', fs=80, output='sos')
         self.number_steps = 0
+        self.sensor = sensor
+
+        self.sensor_map = {'left_pocket':0,'right_pocket':1,'hand':2,'back_pocket':3,'all':0}
+
+        
+        if self.sensor == 'left_pocket':
+            col_start = 3
+            col_end = 4
+        elif self.sensor == 'right_pocket':
+            col_start = 4
+            col_end = 5
+        elif self.sensor == 'hand':
+            col_start = 5
+            col_end = 6
+        elif self.sensor == 'back_pocket':
+            col_start = 6
+            col_end = 7
+        elif self.sensor == 'all':
+            col_start = 3
+            col_end = 7
         if self.AddGyro:
-            self.col_names = [[f' AccelX_{i}', f' AccelY_{i}', f' AccelZ_{i}', f' GyroX_{i}', f' GyroY_{i}', f' GyroZ_{i}'] for i in range(5,6)]
+            self.col_names = [[f' AccelX_{i}', f' AccelY_{i}', f' AccelZ_{i}', f' GyroX_{i}', f' GyroY_{i}', f' GyroZ_{i}'] for i in range(col_start,col_end)]
             self.col_names = [item for sublist in self.col_names for item in sublist]
         else:
-            self.col_names = [[f' AccelX_{i}', f' AccelY_{i}', f' AccelZ_{i}'] for i in range(5,6)]
+            self.col_names = [[f' AccelX_{i}', f' AccelY_{i}', f' AccelZ_{i}'] for i in range(col_start,col_end)]
             self.col_names = [item for sublist in self.col_names for item in sublist]
         self.col_names.insert(0,' Activity')
         self.csv_files = []
@@ -33,31 +53,47 @@ class BaseDataLoader():
                     self.csv_files.append(f'{self.root}/{person}/'+file)
                     self.index_files.append(f'{self.root}/{person}/'+file+'.stepNonoverlap')
         
-        try:
-            self.maximums=np.load('maximums.npy')
-            self.minimums=np.load('minimums.npy')
-            self.total_signal_length = np.load('total_signal_length.npy')[0]
-            self.max_min = self.maximums-self.minimums
-        except:
-            self.stats()
 
-        data,labels = self.read_sequence(0)
+
+        data,labels,sensor_labels,activity = self.read_sequence(0)
         for i in range(1,len(self.csv_files)):
-            data_tmp,label_tmp = self.read_sequence(i)
-
+            data_tmp,label_tmp,sensor_labels_tmp,activity_tmp = self.read_sequence(i)
+            #print(sensor_labels_tmp.shape,sensor_labels.shape)
             data = np.concatenate((data, data_tmp), axis=0)
             labels = np.concatenate((labels,label_tmp),axis=0)
+            sensor_labels = np.concatenate((sensor_labels,sensor_labels_tmp))
+            activity = np.concatenate((activity,activity_tmp))
 
 
         #print(data.shape,labels.shape)
         self.data,self.labels = data,labels
-
+        self.sensor_labels = sensor_labels
+        self.activity = activity
 
     def read_sequence(self,idx):    
         csv = pd.read_csv(self.csv_files[idx],usecols=self.col_names)
-        self.activity = csv.pop(' Activity')
-        csv = csv.to_numpy()
+        activity = csv.pop(' Activity')
+        #csv = csv.to_numpy()
+        if self.normalize==True:
+            csv = (csv-csv.min())/(csv.max()-csv.min())
+
         labels = self.index_to_signal(self.index_files[idx],csv.shape[0])
+        sensor_labels = np.zeros((labels.shape[0])) + self.sensor_map[self.sensor]
+        if self.sensor == 'all':
+            new_names=[' AccelX_', ' AccelY_',' AccelZ_', ' GyroX_', ' GyroY_', ' GyroZ_'] if self.AddGyro else [' AccelX_', ' AccelY_',' AccelZ_']
+            new = pd.DataFrame()
+            for col in new_names:
+                col_to_merge = [col+'3', col+'4', col+'5', col+'6']
+                new[col] = pd.concat([csv[col_to_merge[0]],
+                                    csv[col_to_merge[1]],
+                                    csv[col_to_merge[2]],
+                                    csv[col_to_merge[3]]])
+            labels = np.row_stack((labels,labels,labels,labels))
+            sensor_labels = np.concatenate((sensor_labels+0,sensor_labels+1,sensor_labels+2,sensor_labels+3))
+            activity = np.concatenate((activity,activity,activity,activity))
+        else:
+            new = dp(csv)
+
         if self.relax==True:
             onesS = np.where(labels[:,0]==1)[0]
             onesE = np.where(labels[:,1]==1)[0]
@@ -67,34 +103,16 @@ class BaseDataLoader():
             labels[all_indicesS,0]=1
             labels[all_indicesE,1]=1
 
-        if self.ToFilter:
-            csv = self.filter(csv)
-        if self.normalize==True:
-            #print(data.shape,self.max_min.shape)
-            csv = (csv-self.minimums[1:])/self.max_min[1:]
-            #print('normalized')
-        if self.AddMagnitude:
-            csv = self.magnitude(csv)
+        new = new.to_numpy()
 
-        return csv,labels
+        if self.ToFilter:
+            new = self.filter(new)
+
+        if self.AddMagnitude:
+            new = self.magnitude(new)
+
+        return new,labels,sensor_labels,activity
         
-    def stats(self):    
-        if self.normalize:
-            self.maximums = []
-            self.minimums = []
-            self.total_signal_length = 0
-            for i in self.csv_files:
-                data = pd.read_csv(i,usecols=self.col_names).to_numpy()
-                self.total_signal_length =+ data.shape[0]
-                self.maximums.append(data.max(axis=0))
-                self.minimums.append(data.min(axis=0))
-            self.maximums = np.max(np.array(self.maximums),axis=0)
-            self.minimums = np.min(np.array(self.minimums),axis=0)
-            np.save('maximums.npy',self.maximums)
-            np.save('minimums.npy',self.minimums)
-            np.save('total_signal_length.npy',np.array([self.total_signal_length]))
-            del data,i
-            self.max_min = self.maximums-self.minimums
         
 
     def index_to_signal(self,file,lenth):

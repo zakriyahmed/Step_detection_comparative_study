@@ -22,5 +22,10 @@ if __name__=='__main__':
     df = {'start':start,'end':end}
     df = pd.DataFrame(df)
 
-    df.to_csv('BITLST_2015.csv')
+    df.to_csv('pred.csv')
+
+    df_label = {'start':b.ground_labels[:,0],'end':b.ground_labels[:,1],'activity':b.activity,'sensor':b.sensor_labels}
+
+    df_label = pd.DataFrame(df_label)
+    df_label.to_csv('label.csv')
 
