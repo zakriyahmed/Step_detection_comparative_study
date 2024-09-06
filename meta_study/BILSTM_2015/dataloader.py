@@ -12,7 +12,7 @@ from meta_study.dataloader.base_dataloader import BaseDataLoader
 
 class LSTMDataloader(Dataset):
 
-    def __init__(self,root,ToFilter=False,AddMagnitude=True,AddGyro=True,normalize=True,window_size=500,stride=1,windowed_labels=True,relaxed_labels=False) -> None:
+    def __init__(self,root,ToFilter=False,AddMagnitude=False,AddGyro=True,normalize=True,window_size=500,stride=1,windowed_labels=True,relaxed_labels=False,sensor='all') -> None:
         self.root = root
         self.ToFilter = ToFilter
         self.AddMagnitude = AddMagnitude
@@ -22,13 +22,16 @@ class LSTMDataloader(Dataset):
         self.stride = stride
         self.windowed_labels  = windowed_labels
         self.relaxed_labels = relaxed_labels
+        self.sensor = sensor
 
-        base_data = BaseDataLoader(self.root,self.ToFilter,self.AddMagnitude,self.AddGyro,self.normalize,self.relaxed_labels,sensor='all')
+        base_data = BaseDataLoader(self.root,self.ToFilter,self.AddMagnitude,self.AddGyro,self.normalize,self.relaxed_labels,sensor=self.sensor)
 
         data,labels = base_data.data,base_data.labels
 
         data = torch.tensor(data)
         labels = torch.tensor(labels)
+
+        data = 2*(data-1)
 
         self.sensor_labels = base_data.sensor_labels
         self.activity = base_data.activity
