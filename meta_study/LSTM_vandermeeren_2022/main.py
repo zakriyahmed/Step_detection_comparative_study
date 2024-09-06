@@ -1,6 +1,24 @@
 import torch
 import pandas as pd # type: ignore
+import sys
 
+class Logger:
+    def __init__(self, filename):
+        self.terminal = sys.stdout  # Save the original stdout
+        self.log = open(filename, "w", buffering=1)  # Line-buffered file
+
+    def write(self, message):
+        self.terminal.write(message)  # Write to console (terminal)
+        self.log.write(message)       # Write to file
+        self.log.flush()              # Ensure file gets updated immediately
+
+    def flush(self):
+        self.terminal.flush()         # Ensure terminal output is flushed
+        self.log.flush()  
+
+
+sys.stdout = Logger("logs.txt")
+print('Staring logs\n')
 
 from train import Train, Test
 import utils
@@ -24,3 +42,8 @@ if __name__=='__main__':
 
     df.to_csv('vandermeeren_pred.csv')
 
+    df_label = {'start':b.ground_labels[:,0],'end':b.ground_labels[:,1],'activity':b.activity,'sensor':b.sensor_labels}
+
+    df_label = pd.DataFrame(df_label)
+    df_label.to_csv('label.csv')
+    sys.stdout.log.close()

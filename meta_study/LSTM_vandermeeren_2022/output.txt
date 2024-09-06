@@ -1,0 +1,2 @@
+This will go to both console and file.
+Another line that will be written to both.

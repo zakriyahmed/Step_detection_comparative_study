@@ -23,7 +23,7 @@ class LeeDataloader():
         self.data,self.label = base_data.data,base_data.labels
         self.sensor_map = base_data.sensor_map
         self.sensor_labels = base_data.sensor_labels
-
+        self.activity = base_data.activity
 
         
 

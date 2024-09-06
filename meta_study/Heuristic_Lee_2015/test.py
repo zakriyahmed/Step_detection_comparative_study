@@ -17,11 +17,11 @@ if __name__ == '__main__':
 
     data = a.data
     labels = a.label
-    data = np.concatenate((data[50:159200],data[159400:]),axis=0)
-    labels = np.concatenate((labels[50:159200],labels[159400:]),axis=0)
+    #data = np.concatenate((data[50:159200],data[159400:]),axis=0)
+    #labels = np.concatenate((labels[50:159200],labels[159400:]),axis=0)
     count_s = np.count_nonzero(labels[:,0])
 
-    df = pd.read_csv('grid_search.csv')
+    df = pd.read_csv('grid_search_new_all_sensor.csv')
 
     idx = df['accuracy'].idxmax()
 
@@ -40,14 +40,14 @@ if __name__ == '__main__':
 
     start_pred = np.array(step_indices[:,0])
     end_pred  = np.array(step_indices[:,1])
-    pred = np.zeros_like(labels)
+    pred = np.zeros_like(labels[50:,:])
     pred[start_pred,0] = 1
     pred[end_pred,1] = 1
     print(len(np.nonzero(pred[:,0])))
     pred_df = pd.DataFrame({'start':pred[:,0],'end':pred[:,1]})
     pred_df.to_csv('pred.csv')
 
-    true_df = pd.DataFrame({'start':labels[:,0],'end':labels[:,1]})
+    true_df = pd.DataFrame({'start':labels[50:,0],'end':labels[50:,1],'activity':a.activity[50:],'sensor':a.sensor_labels[50:]})
     true_df.to_csv('label.csv')
 
 

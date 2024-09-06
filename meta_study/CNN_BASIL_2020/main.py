@@ -7,9 +7,9 @@ from train import Train, Test
 
 if __name__=='__main__':
 
-    a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.0001,30)
-    a.train()
-    a.save_model()
+    #a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.0001,30)
+    #a.train()
+    #a.save_model()
 
     b = Test('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test','cuda',0.001,300)
     _,_,start,end = b.test()

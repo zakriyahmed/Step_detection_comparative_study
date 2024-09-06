@@ -59,8 +59,8 @@ class Test():
                         pred_step_end_indices.append((self.first_step - int(self.window_size/2) + self.stride* i +1))
 
             
-        start = torch.zeros((self.dataset.windows_labels.shape[0]))
-        end = torch.zeros((self.dataset.windows_labels.shape[0]))
+        start = torch.zeros((self.dataset.ground_labels.shape[0]))
+        end = torch.zeros((self.dataset.ground_labels.shape[0]))
         start[[pred_step_end_indices]] = 1
         end[[pred_step_end_indices]] = 1
         return count,true_count,start,end
