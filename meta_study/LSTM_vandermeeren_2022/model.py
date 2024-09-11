@@ -47,7 +47,7 @@ class LSTM(nn.Module):
         start_output = out[:, :, 0]  # (batch_size, sequence_length)
         end_output = out[:, :, 1]    # (batch_size, sequence_length)
         
-        return start_output, end_output, (h0,c0)
+        return start_output, end_output, h0,c0
 
 #model = LSTM(3,400,2,0.2)
 #input = torch.zeros((10,200,3))

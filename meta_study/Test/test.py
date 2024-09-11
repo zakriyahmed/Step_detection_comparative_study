@@ -46,7 +46,7 @@ def scores(predictions,labels,threshold):
 
 study_name = [ 'BILSTM_2015',
                 #'SMARTphone_abiad_2021',
-                #'LSTM_vandermeeren_2022',
+                'LSTM_vandermeeren_2022',
                 'Heuristic_Lee_2015',
                 'CNN_BASIL_2020',
                 #'ML_vandermeeren_2018'
@@ -59,7 +59,7 @@ for study in study_name:
     print(f'\n{study}\n')
     folder = os.path.join(root_dir,study)
     pred = pd.read_csv(os.path.join(folder,'pred.csv'))
-    label = pd.read_csv(os.path.join(folder,'label.csv'))
+    label = pd.read_csv(os.path.join(folder,'label.csv'))[:1990800]
     print(pred.shape,label.shape)
     for i in range(4):
         idx = label.index[label['activity']==i]

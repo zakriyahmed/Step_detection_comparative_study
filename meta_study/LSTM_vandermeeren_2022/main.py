@@ -25,25 +25,26 @@ import utils
 
 if __name__=='__main__':
 
-    a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.001,30)
+    a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.001,100)
     a.train()
     a.save_model()
 
-    b = Test('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test','cuda',0.001,30)
+    b = Test('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test','cpu',0.001,100)
     start_with_patches,end_with_patches = b.test()
 
-    clean_start = utils.remove_small_brusts(start_with_patches,10)
-    clean_end = utils.remove_small_brusts(end_with_patches,10)
+    clean_start = utils.remove_small_brusts(start_with_patches[0],15)
+    clean_end = utils.remove_small_brusts(end_with_patches[0],15)
 
     start = utils.remove_patches(clean_start)
     end = utils.remove_patches(clean_end)
+    print(len(start))
     df = {'start':start,'end':end}
     df = pd.DataFrame(df)
 
-    df.to_csv('vandermeeren_pred.csv')
+    df.to_csv('pred.csv')
 
     df_label = {'start':b.ground_labels[:,0],'end':b.ground_labels[:,1],'activity':b.activity,'sensor':b.sensor_labels}
 
     df_label = pd.DataFrame(df_label)
     df_label.to_csv('label.csv')
-    sys.stdout.log.close()
+    #sys.stdout.log.close()

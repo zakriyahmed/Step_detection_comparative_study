@@ -68,7 +68,7 @@ class Test():
         self.ws0,self.we0,self.ws1,self.we1 = 0.739,0.739,1.548,1.548
         self.model = LSTM(input_size=4, hidden_size=400, num_layers=2).to(self.device)
         self.dataset = LSTMDataloader(self.root,ToFilter=True,AddMagnitude=True,AddGyro=False,normalize=True,window_size=200,stride=200,windowed_labels=True)
-        self.dataloader = DataLoader(self.dataset,batch_size=2048,shuffle=False)
+        self.dataloader = DataLoader(self.dataset,batch_size=1,shuffle=False)
         self.ground_labels = self.dataset.ground_labels
         self.activity = self.dataset.activity
         self.sensor_labels = self.dataset.sensor_labels
@@ -76,7 +76,7 @@ class Test():
         self.load()
 
     def load(self):
-        self.model = torch.load(f"LSTM_vandermeeren_{self.epochs}_epochs.pt")
+        self.model = torch.load(f"LSTM_vandermeeren_{self.epochs}_epochs.pt").to(self.device)
 
     def test(self):
         sigmoid = nn.Sigmoid()
@@ -85,15 +85,15 @@ class Test():
             if start:
                 #print(test_input.shape)
                 test_input = test_input.float().to(self.device)
-                h0,c0 = self.model.zeros()
-                logits_S,logits_E,h0,c0 = self.model.testing(test_input,h0,c0)
+                #h0,c0 = self.model.zeros(test_input)
+                logits_S,logits_E = self.model(test_input)
                 logits_S, logits_E = sigmoid(logits_S),sigmoid(logits_E)
 
-                logits_S[logits_S>=0.8] == 1
-                logits_S[logits_S<0.8] == 0
+                logits_S[logits_S>=0.5] = 1
+                logits_S[logits_S<0.5] = 0
 
-                logits_E[logits_E>=0.8] == 1
-                logits_E[logits_E<0.8] == 0
+                logits_E[logits_E>=0.5] = 1
+                logits_E[logits_E<0.5] = 0
 
                 start = False
 
@@ -105,15 +105,16 @@ class Test():
                 #print(test_input.shape)
                 test_input = test_input.float().to(self.device)
                 
-                logits_S,logits_E,h0,c0 = self.model.testing(test_input,h0,c0)
+                logits_S,logits_E = self.model(test_input)
                 logits_S, logits_E = sigmoid(logits_S),sigmoid(logits_E)
 
-                logits_S[logits_S>=0.8] == 1
-                logits_S[logits_S<0.8] == 0
+                logits_S[logits_S>=0.5] = 1
+                logits_S[logits_S<0.5] = 0
 
-                logits_E[logits_E>=0.8] == 1
-                logits_E[logits_E<0.8] == 0
-                
+                logits_E[logits_E>=0.5] = 1
+                logits_E[logits_E<0.5] = 0
+                #print(logits_S)
+                #print(start_preds.shape,logits_S.shape)
                 start_preds = torch.cat((start_preds,logits_S.clone().cpu().detach()),dim=1)
                 end_preds = torch.cat((end_preds,logits_E.clone().cpu().detach()),dim=1)
                 all_labels = torch.cat((all_labels,test_label.clone().cpu().detach()),dim=1)
@@ -121,9 +122,9 @@ class Test():
 
         return start_preds,end_preds
     
-b = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.001,30)
-b.train()
-b.save_model()
+#b = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.001,2)
+#b.train()
+#b.save_model()
 #a = Test('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test','cuda',0.001,30)
 #x_,y_ = a.test()
 #print(x_.shape,y_.shape)
