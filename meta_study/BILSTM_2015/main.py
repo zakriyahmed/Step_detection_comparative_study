@@ -1,14 +1,32 @@
 import torch
 import pandas as pd # type: ignore
 import os
-print(os.getcwd())
+import sys
+
+class Logger:
+    def __init__(self, filename):
+        self.terminal = sys.stdout  # Save the original stdout
+        self.log = open(filename, "w", buffering=1)  # Line-buffered file
+
+    def write(self, message):
+        self.terminal.write(message)  # Write to console (terminal)
+        self.log.write(message)       # Write to file
+        self.log.flush()              # Ensure file gets updated immediately
+
+    def flush(self):
+        self.terminal.flush()         # Ensure terminal output is flushed
+        self.log.flush()  
+
+
+sys.stdout = Logger("logs.txt")
+print('Staring logs\n')
 
 from train import Train, Test
 import utils
 
 if __name__=='__main__':
 
-    a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.001,100)
+    a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.0001,100)
     a.train()
     a.save_model()
 
