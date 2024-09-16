@@ -7,8 +7,8 @@ class BiLSTMModel(nn.Module):
         super(BiLSTMModel, self).__init__()
         self.hidden_size = hidden_size
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers=num_layers, bidirectional=True, batch_first=True)
-        self.fc = nn.Linear(hidden_size * 2, 2)  # *2 for bidirectional
-        self.softmax = nn.Softmax(dim=2)
+        self.fc = nn.Linear(hidden_size * 2, 4)  # *2 for bidirectional
+        #self.softmax = nn.Softmax(dim=2)
 
     def forward(self, x):
         lstm_out, _ = self.lstm(x)  # lstm_out shape: (batch_size, sequence_length, hidden_size*2)

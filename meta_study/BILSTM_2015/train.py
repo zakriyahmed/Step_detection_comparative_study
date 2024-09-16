@@ -11,7 +11,7 @@ import numpy as np
 from loss import BCEWithWeights
 from model import BiLSTMModel as LSTM
 from dataloader import LSTMDataloader
-
+import utils
 
 class Train():
     def __init__(self,root,device,learning_rate,epochs) -> None:
@@ -19,8 +19,8 @@ class Train():
         self.device = device
         self.epochs = epochs
         self.learning_rate = learning_rate
-        self.ws0,self.we0,self.ws1,self.we1 = 1,1,1,1
-        self.model = LSTM(input_size=6, hidden_size=5, num_layers=1)
+        #self.ws0,self.we0,self.ws1,self.we1 = 0.739,0.739,25.548,25.548
+        self.model = LSTM(input_size=6, hidden_size=100, num_layers=2)
         self.dataset = LSTMDataloader(self.root,
                                       ToFilter=False,
                                       AddMagnitude=False,
@@ -30,6 +30,15 @@ class Train():
                                       stride=100,
                                       windowed_labels=True)
         self.dataloader = DataLoader(self.dataset,batch_size=128,shuffle=True)
+        self.ground_labels = self.dataset.ground_labels
+        self.n_ones = np.count_nonzero(self.ground_labels[:,0])
+        #print(self.n_ones,self.ground_labels.shape)
+        self.n_zeros = self.ground_labels[:,0].shape[0] - self.n_ones
+        self.ws0 = (self.n_ones + self.n_zeros) / (2*self.n_zeros)
+        self.ws1 = (self.n_ones + self.n_zeros) / (2*self.n_ones)
+        self.we0 = self.ws0
+        self.we1 = self.ws1
+        print(self.ws0,self.ws1)
         self.loss_history_epoch = []
         self.acc_history_epoch = []
         files = os.listdir()
@@ -64,7 +73,7 @@ class Train():
                 print(f'Epoch: {epoch},    Loss: {avg_loss}')
                 self.loss_history_epoch.append(avg_loss)
 
-                if epoch%10 == 0:
+                if epoch%10 == 0 and epoch!=0:
                     self.save_model()
                     b = Test('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test','cuda',0.001,self.epochs,'all')
                     start,_ = b.test()
@@ -94,7 +103,7 @@ class Test():
         self.sensor = sensor
         self.learning_rate = learning_rate
         self.ws0,self.we0,self.ws1,self.we1 = 0.739,0.739,1.548,1.548
-        self.model = LSTM(input_size=6, hidden_size=5, num_layers=1).to(self.device)
+        self.model = LSTM(input_size=6, hidden_size=100, num_layers=1).to(self.device)
         self.dataset = LSTMDataloader(self.root,
                                       ToFilter=False,
                                       AddMagnitude=False,
@@ -171,8 +180,14 @@ class Test():
                 mid_term = ((votedPred[-self.window_size+1:]*des) + (votedPred_tmp[:self.window_size-1]*asc))/self.window_size
 
                 votedPred = torch.cat((votedPred[:-self.window_size+1],mid_term,votedPred_tmp[self.window_size-1:]),dim=0) 
+        startP,endP = votedPred[:,0],votedPred[:,1]
+        startP[startP>=0.5] =1
+        endP[endP>=0.5]=1
 
-        return votedPred[:,0],votedPred[:,1]
+        startP[startP<0.5]=0
+        endP[endP<0.5]=0
+
+        return startP,endP
     
 
     def diag_sum(self,tensorS,tensorE):
@@ -208,8 +223,10 @@ class Test():
 
         return torch.stack((votedPredS,votedPredE),dim=1)
     
-    def count_accuracy(self,start_preds,all_labels):
-        start_count = torch.count_nonzero(start_preds)
+    def count_accuracy(self,start,all_labels):
+        start = utils.remove_small_brusts(start,6)
+        start = utils.remove_patches(start)
+        start_count = torch.count_nonzero(start)
         true_start_count = torch.count_nonzero(all_labels[:,0])
         
         acc = start_count/true_start_count

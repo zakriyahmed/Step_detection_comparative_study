@@ -27,3 +27,4 @@ def remove_small_brusts(tensor,min_length):
 #a = torch.tensor([0,0,0,0,1,1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0])
 #print(remove_patches(remove_small_brusts(a,3)))
 
+ 
