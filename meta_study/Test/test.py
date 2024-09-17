@@ -4,6 +4,23 @@ import math
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
+class Logger:
+    def __init__(self, filename):
+        self.terminal = sys.stdout  # Save the original stdout
+        self.log = open(filename, "w", buffering=1)  # Line-buffered file
+
+    def write(self, message):
+        self.terminal.write(message)  # Write to console (terminal)
+        self.log.write(message)       # Write to file
+        self.log.flush()              # Ensure file gets updated immediately
+
+    def flush(self):
+        self.terminal.flush()         # Ensure terminal output is flushed
+        self.log.flush()  
+
+
+sys.stdout = Logger("logs.txt")
+print('Staring logs\n')
 
 import pandas as pd # type: ignore 
 import torch
