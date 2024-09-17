@@ -24,6 +24,7 @@ idx = report['accuracy'].idxmax()
 window_size = report['ws'][idx]
 stride = window_size
 a = Dataloader(root,ToFilter=ToFilter,AddMagnitude=AddMagnitude,AddGyro=AddGyro,normalize=normalize, windowed_labels=True)
+
 windows,labels = a.getdata(window_size,stride)
 
 data,label = all_features(windows,labels) # type: ignore
@@ -64,3 +65,8 @@ prediction = pred_windows.reshape(-1,2)
 df = {'start':prediction[:,0],'end':prediction[:,1]}
 df = pd.DataFrame(df)
 df.to_csv('pred.csv')
+
+df_label = {'start':a.ground_labels[:,0],'end':a.ground_labels[:,1],'activity':a.activity,'sensor':a.sensor_labels}
+
+df_label = pd.DataFrame(df_label)
+df_label.to_csv('label.csv')

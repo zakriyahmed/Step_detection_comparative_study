@@ -25,11 +25,11 @@ import utils
 
 if __name__=='__main__':
 
-    a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.001,100)
+    a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.001,50)
     a.train()
     a.save_model()
 
-    b = Test('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test','cpu',0.001,100)
+    b = Test('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test','cpu',0.001,50)
     start_with_patches,end_with_patches = b.test()
 
     clean_start = utils.remove_small_brusts(start_with_patches[0],15)

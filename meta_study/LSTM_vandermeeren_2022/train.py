@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-
+import numpy as np
 
 from loss import BCEWithWeights
 from model import LSTM
@@ -15,10 +15,18 @@ class Train():
         self.device = device
         self.epochs = epochs
         self.learning_rate = learning_rate
-        self.ws0,self.we0,self.ws1,self.we1 = 0.739,0.739,1.548,1.548
+        #self.ws0,self.we0,self.ws1,self.we1 = 0.739,0.739,1.548,1.548
         self.model = LSTM(input_size=4, hidden_size=400, num_layers=2)
-        self.dataset = LSTMDataloader(self.root,ToFilter=True,AddMagnitude=True,AddGyro=False,normalize=True,window_size=200,stride=1,windowed_labels=True,relaxed_labels=True)
+        self.dataset = LSTMDataloader(self.root,ToFilter=True,AddMagnitude=True,AddGyro=False,normalize=True,window_size=200,stride=40,windowed_labels=True,relaxed_labels=True)
         self.dataloader = DataLoader(self.dataset,batch_size=1024,shuffle=True)
+        self.ground_labels = self.dataset.ground_labels
+        self.n_ones = np.count_nonzero(self.ground_labels[:,0]) 
+        #print(self.n_ones,self.ground_labels.shape)
+        self.n_zeros = self.ground_labels[:,0].shape[0] - self.n_ones
+        self.ws0 = (self.n_ones + self.n_zeros) / (2*self.n_zeros)
+        self.ws1 = (self.n_ones + self.n_zeros) / (2*self.n_ones)
+        self.we0 = self.ws0
+        self.we1 = self.ws1
         self.loss_history_epoch = []
 
     def train(self):

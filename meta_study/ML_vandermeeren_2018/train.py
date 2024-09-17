@@ -32,18 +32,19 @@ def grid_search():
 
 
     for window_size in window_sizes:
+        stride = int(window_size)
+        windows,labels = a.getdata(window_size,stride)
+
+        data,label = all_features(windows,labels) # type: ignore 
+
+        class_weights = compute_class_weight('balanced', classes=np.unique(label), y=label)
+        class_weights_dict = {i: weight for i, weight in enumerate(class_weights)}
+
+        X_train, X_test, y_train, y_test = train_test_split(data, label, test_size=0.2, random_state=42)
         for c in cs:
             for gamma in gammas:
                 print(f'C:{c} \tgamma:{gamma} \t ws:{window_size}')
-                stride = window_size
-                windows,labels = a.getdata(window_size,stride)
-
-                data,label = all_features(windows,labels) # type: ignore
-
-                class_weights = compute_class_weight('balanced', classes=np.unique(label), y=label)
-                class_weights_dict = {i: weight for i, weight in enumerate(class_weights)}
-
-                X_train, X_test, y_train, y_test = train_test_split(data, label, test_size=0.2, random_state=42)
+                
 
                 rbf_svm = SVC(kernel='rbf', C=c, gamma=gamma,class_weight=class_weights_dict, random_state=42)
                 rbf_svm.fit(X_train, y_train)
@@ -59,11 +60,11 @@ def grid_search():
                 print( f'\t\t\t\t accuracy:{accuracy}')
 
                 report_df = pd.DataFrame(report)
-                report_df.to_csv('grid_search.csv')
+                report_df.to_csv('grid_search_all.csv')
 
 def save_best_model():
     root = '/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train'
-    report = pd.read_csv('grid_search.csv')
+    report = pd.read_csv('grid_search_all.csv')
     ToFilter = True
     AddMagnitude = True
     AddGyro = False
@@ -88,13 +89,13 @@ def save_best_model():
     rbf_svm = SVC(kernel='rbf', C=c, gamma=gamma,class_weight=class_weights_dict, random_state=42)
     rbf_svm.fit(X_train, y_train)
 
-    with open('svm_model.pkl', 'wb') as file:
+    with open('svm_model_all.pkl', 'wb') as file:
         pickle.dump(rbf_svm, file)
 
 
 
 if __name__ == '__main__':
-    #grid_search()
+    grid_search()
     save_best_model()
 
 

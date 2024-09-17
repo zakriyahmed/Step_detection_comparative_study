@@ -25,10 +25,12 @@ class Dataloader(Dataset):
         base_data = BaseDataLoader(self.root,self.ToFilter,self.AddMagnitude,self.AddGyro,self.normalize,self.relaxed_labels)
 
         data,labels = base_data.data,base_data.labels
-
+        self.sensor_labels = base_data.sensor_labels
+        self.activity = base_data.activity
+        self.ground_labels = base_data.labels
         data = torch.tensor(data)
         labels = torch.tensor(labels)
-
+    
         #print(data.shape,labels.shape)
 
         

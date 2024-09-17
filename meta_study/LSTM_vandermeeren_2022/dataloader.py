@@ -12,7 +12,7 @@ from meta_study.dataloader.base_dataloader import BaseDataLoader
 
 class LSTMDataloader(Dataset):
 
-    def __init__(self,root,ToFilter=False,AddMagnitude=True,AddGyro=True,normalize=True,window_size=100,stride=30,windowed_labels=True,relaxed_labels=False) -> None:
+    def __init__(self,root,ToFilter=False,AddMagnitude=True,AddGyro=True,normalize=True,window_size=100,stride=30,windowed_labels=True,relaxed_labels=True) -> None:
         self.root = root
         self.ToFilter = ToFilter
         self.AddMagnitude = AddMagnitude
