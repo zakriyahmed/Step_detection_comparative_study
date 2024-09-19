@@ -23,7 +23,7 @@ normalize = True
 idx = report['accuracy'].idxmax()
 window_size = report['ws'][idx]
 stride = window_size
-a = Dataloader(root,ToFilter=ToFilter,AddMagnitude=AddMagnitude,AddGyro=AddGyro,normalize=normalize, windowed_labels=True)
+a = Dataloader(root,ToFilter=ToFilter,AddMagnitude=AddMagnitude,AddGyro=AddGyro,normalize=normalize, windowed_labels=True,sensor='all')
 
 windows,labels = a.getdata(window_size,stride)
 

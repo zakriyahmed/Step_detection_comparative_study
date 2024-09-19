@@ -12,17 +12,18 @@ from meta_study.dataloader.base_dataloader import BaseDataLoader
 
 class Dataloader(Dataset):
 
-    def __init__(self,root,ToFilter=False,AddMagnitude=True,AddGyro=True,normalize=True,window_size=100,stride=1,windowed_labels=True,relaxed_labels=False) -> None:
+    def __init__(self,root,ToFilter=False,AddMagnitude=True,AddGyro=True,normalize=True,window_size=100,stride=1,windowed_labels=True,relaxed_labels=False,sensor='all') -> None:
         self.root = root
         self.ToFilter = ToFilter
         self.AddMagnitude = AddMagnitude
         self.AddGyro = AddGyro
         self.normalize = normalize
+        self.sensor= sensor
         #self.window_size = window_size
         #self.stride = stride
         self.windowed_labels  = windowed_labels
         self.relaxed_labels = relaxed_labels
-        base_data = BaseDataLoader(self.root,self.ToFilter,self.AddMagnitude,self.AddGyro,self.normalize,self.relaxed_labels)
+        base_data = BaseDataLoader(self.root,self.ToFilter,self.AddMagnitude,self.AddGyro,self.normalize,self.relaxed_labels,sensor=self.sensor)
 
         data,labels = base_data.data,base_data.labels
         self.sensor_labels = base_data.sensor_labels

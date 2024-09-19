@@ -66,7 +66,7 @@ study_name = [ 'BILSTM_2015',
                 'LSTM_vandermeeren_2022',
                 'Heuristic_Lee_2015',
                 'CNN_BASIL_2020',
-                #'ML_vandermeeren_2018'
+                'ML_vandermeeren_2018'
             ]
 root_dir = sys.path[0][:-4]
 
