@@ -8,11 +8,11 @@ import numpy as np
 
 from model import Conv1DModel as CNN # type: ignore
 from dataloader import CNNDataloader
-from test import Test
+from .test import Test
 
 
 class Train():
-    def __init__(self,root,device,learning_rate,epochs) -> None:
+    def __init__(self,root,device,learning_rate,epochs,individuals=None) -> None:
         self.root = root
         self.device = device
         self.epochs = epochs
@@ -20,7 +20,16 @@ class Train():
         self.window_size = 160
         self.stride = 1
         self.model = CNN(window_size=self.window_size,total_features=3)
-        self.dataset = CNNDataloader(self.root,ToFilter=True,AddMagnitude=False,AddGyro=False,normalize=True,window_size=self.window_size,stride=self.stride,windowed_labels=True)
+        self.individuals = individuals
+        self.dataset = CNNDataloader(self.root,
+                                     ToFilter=True,
+                                     AddMagnitude=False,
+                                     AddGyro=False,
+                                     normalize=True,
+                                     window_size=self.window_size,
+                                     stride=self.stride,
+                                     windowed_labels=True,
+                                     individuals=self.individuals)
         self.dataloader = DataLoader(self.dataset,batch_size=256,shuffle=True)
         self.loss_history_epoch = []
         self.acc_history_epoch = []

@@ -7,7 +7,15 @@ import numpy as np
 
 
 class BaseDataLoader():
-    def __init__(self, root,ToFilter=False,AddMagnitude=True,AddGyro=True,normalize=True,relax=False,sensor = 'hand',individuals=None):
+    def __init__(self, root,
+                       ToFilter=False,
+                       AddMagnitude=True,
+                       AddGyro=True,
+                       normalize=True,
+                       relax=False,
+                       sensor = 'hand',
+                       individuals=None
+                       ):
         self.root = root
         if individuals is None:
             self.individuals = os.listdir(self.root)

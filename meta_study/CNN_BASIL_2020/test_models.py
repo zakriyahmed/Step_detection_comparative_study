@@ -11,19 +11,28 @@ from dataloader import CNNDataloader
 
 
 class Test():
-    def __init__(self,root,device,learning_rate,epochs,during_training=False) -> None:
+    def __init__(self,root,device,learning_rate,epochs,during_training=False,individuals=None) -> None:
         self.root = root
         self.device = device
         self.epochs = epochs
         self.during_training = during_training
         self.learning_rate = learning_rate
         self.window_size = 160
+        self.individuals = individuals
         if self.during_training==True:
             self.stride = 160
         else:
             self.stride = 1
         self.model = CNN(window_size=self.window_size,total_features=3).to(self.device)
-        self.dataset = CNNDataloader(self.root,ToFilter=True,AddMagnitude=False,AddGyro=False,normalize=True,window_size=self.window_size,stride=self.stride,windowed_labels=True)
+        self.dataset = CNNDataloader(self.root,
+                                     ToFilter=True,
+                                     AddMagnitude=False,
+                                     AddGyro=False,
+                                     normalize=True,
+                                     window_size=self.window_size,
+                                     stride=self.stride,
+                                     windowed_labels=True,
+                                     individuals=self.individuals)
         self.first_step = self.dataset.first_step
         self.ground_labels = self.dataset.ground_labels
         self.activity = self.dataset.activity

@@ -13,7 +13,16 @@ from meta_study.dataloader.base_dataloader import BaseDataLoader
 
 class CNNDataloader(Dataset):
 
-    def __init__(self,root,ToFilter=False,AddMagnitude=True,AddGyro=True,normalize=True,window_size=500,stride=1,windowed_labels=True,relaxed_labels=False) -> None:
+    def __init__(self,root,
+                      ToFilter=False,
+                      AddMagnitude=True,
+                      AddGyro=True,
+                      normalize=True,
+                      window_size=500,
+                      stride=1,
+                      windowed_labels=True,
+                      relaxed_labels=False,
+                      individuals=None) -> None:
         self.root = root
         self.ToFilter = ToFilter
         self.AddMagnitude = AddMagnitude
@@ -23,8 +32,15 @@ class CNNDataloader(Dataset):
         self.stride = stride
         self.windowed_labels  = windowed_labels
         self.relaxed_labels = relaxed_labels
-
-        base_data = BaseDataLoader(self.root,self.ToFilter,self.AddMagnitude,self.AddGyro,self.normalize,self.relaxed_labels,sensor='all')
+        self.individuals = individuals
+        base_data = BaseDataLoader(self.root,
+                                   self.ToFilter,
+                                   self.AddMagnitude,
+                                   self.AddGyro,
+                                   self.normalize,
+                                   self.relaxed_labels,
+                                   sensor='all',
+                                   individuals=self.individuals)
 
         data,labels = base_data.data,base_data.labels
         self.first_step = np.nonzero(labels[:,0])[0].min()
