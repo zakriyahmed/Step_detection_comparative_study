@@ -7,9 +7,12 @@ import numpy as np
 
 
 class BaseDataLoader():
-    def __init__(self, root,ToFilter=False,AddMagnitude=True,AddGyro=True,normalize=True,relax=False,sensor = 'hand'):
+    def __init__(self, root,ToFilter=False,AddMagnitude=True,AddGyro=True,normalize=True,relax=False,sensor = 'hand',individuals=None):
         self.root = root
-        self.individuals = os.listdir(self.root)
+        if individuals is None:
+            self.individuals = os.listdir(self.root)
+        else:
+            self.individuals = individuals
         self.ToFilter = ToFilter
         self.AddMagnitude = AddMagnitude
         self.AddGyro = AddGyro

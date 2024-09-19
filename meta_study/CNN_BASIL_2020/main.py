@@ -5,6 +5,18 @@ print(os.getcwd())
 
 from train import Train, Test
 
+test_set = {0:list(np.arange(0,6)),
+            1:list(np.arange(6,12)),
+            2:list(np.arange(12,19)),
+            3:list(np.arange(19,25)),
+            4:list(np.arange(25,32))}
+
+train_set = {0:list(np.arange(6,32)),
+            1:list(np.arange(0,6))+list(np.arange(12,32)),
+            2:list(np.arange(0,12))+list(np.arange(19,32)),
+            3:list(np.arange(0,19))+list(np.arange(25,32)),
+            4:list(np.arange(0,25))}
+
 if __name__=='__main__':
 
     #a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.0001,30)

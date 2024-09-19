@@ -68,7 +68,7 @@ study_name = [ 'BILSTM_2015',
                 'CNN_BASIL_2020',
                 'ML_vandermeeren_2018'
             ]
-root_dir = sys.path[0][:-4]
+root_dir = sys.path[-1]+"\\meta_study"
 
 activity_map = {0:'standing',1:'walking',2:'stairs up',3:'stairs down',4:'elevator up',5:'elevator down'}
 sensor_map = {0:'left',1:'right',2:'hand',3:'back'}
