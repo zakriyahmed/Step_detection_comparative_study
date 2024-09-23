@@ -1,0 +1,40 @@
+Staring logs
+
+
+
+ 0 
+
+
+Epoch: 0,    Loss: 0.5939324191772845
+Epoch: 0,    Acc: tensor([99.2039], device='cuda:0', grad_fn=<MulBackward0>)
+Epoch: 1,    Loss: 0.3336961179816914
+Epoch: 2,    Loss: 0.3174986816449794
+Epoch: 3,    Loss: 0.30725478331380396
+Epoch: 4,    Loss: 0.30020259368535857
+Epoch: 5,    Loss: 0.29481598796602393
+Epoch: 6,    Loss: 0.29009962970532555
+Epoch: 7,    Loss: 0.28610918254598816
+Epoch: 8,    Loss: 0.282691635906991
+Epoch: 9,    Loss: 0.2796634204777977
+Epoch: 10,    Loss: 0.27700235827990005
+Epoch: 10,    Acc: tensor([101.6292], device='cuda:0', grad_fn=<MulBackward0>)
+Epoch: 11,    Loss: 0.27447540129668935
+Epoch: 12,    Loss: 0.2720055673802183
+Epoch: 13,    Loss: 0.2700324108538472
+Epoch: 14,    Loss: 0.2683158180537915
+Epoch: 15,    Loss: 0.2670301105594301
+Epoch: 16,    Loss: 0.2655952320447241
+Epoch: 17,    Loss: 0.2644632802842154
+Epoch: 18,    Loss: 0.2634254114401577
+Epoch: 19,    Loss: 0.26226319437835677
+Epoch: 20,    Loss: 0.26111496985662197
+Epoch: 20,    Acc: tensor([100.2069], device='cuda:0', grad_fn=<MulBackward0>)
+Epoch: 21,    Loss: 0.2601134961556112
+Epoch: 22,    Loss: 0.25919149660820967
+Epoch: 23,    Loss: 0.25847978325489196
+Epoch: 24,    Loss: 0.2576631485024492
+Epoch: 25,    Loss: 0.25698995958869475
+Epoch: 26,    Loss: 0.25638773906045853
+Epoch: 27,    Loss: 0.255901851017813
+Epoch: 28,    Loss: 0.25533453598291567
+Epoch: 29,    Loss: 0.25487732981502204

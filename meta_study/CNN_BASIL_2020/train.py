@@ -8,19 +8,21 @@ import numpy as np
 
 from model import Conv1DModel as CNN # type: ignore
 from dataloader import CNNDataloader
-from .test import Test
+from test_models import Test
 
 
 class Train():
-    def __init__(self,root,device,learning_rate,epochs,individuals=None) -> None:
+    def __init__(self,root,device,learning_rate,epochs,model_name,individuals=None,test_individuals=[31]) -> None:
         self.root = root
         self.device = device
         self.epochs = epochs
         self.learning_rate = learning_rate
         self.window_size = 160
         self.stride = 1
+        self.model_name = model_name
         self.model = CNN(window_size=self.window_size,total_features=3)
         self.individuals = individuals
+        self.test_individuals = test_individuals
         self.dataset = CNNDataloader(self.root,
                                      ToFilter=True,
                                      AddMagnitude=False,
@@ -34,8 +36,8 @@ class Train():
         self.loss_history_epoch = []
         self.acc_history_epoch = []
         files = os.listdir()
-        if f'BASIL_2020_{self.epochs}_epochs.pt' in files:
-            self.model = torch.load(f'BASIL_2020_{self.epochs}_epochs.pt')
+        if model_name in files:
+            self.model = torch.load(self.model_name)
 
     
 
@@ -68,8 +70,8 @@ class Train():
                 self.loss_history_epoch.append(avg_loss)
 
                 if epoch%10 == 0:
-                    self.save_model()
-                    b = Test('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/test','cuda',0.001,self.epochs,during_training=True)
+                    self.save_model(self.model_name)
+                    b = Test(self.root,'cuda',self.model_name,during_training=True,individuals = self.test_individuals)
                     start,Tstart,_,_ = b.test()
                     acc = b.count_accuracy(start,Tstart)
                     self.acc_history_epoch.append(acc)
@@ -80,10 +82,10 @@ class Train():
             print('Interrupted. Saving model')
             np.save('loss.npy',np.array(self.loss_history_epoch))
             np.save('Acc.npy',np.array(self.acc_history_epoch))
-            self.save_model()    
+            self.save_model(self.model_name)    
 
-    def save_model(self):
-        torch.save(self.model,f"BASIL_2020_{self.epochs}_epochs.pt")
+    def save_model(self,name):
+        torch.save(self.model,name)
         
 
 """a = Train('/home/ann_ss22_group4/step detection/SIMUL-dataset/data/by-person/train','cuda',0.001,21)

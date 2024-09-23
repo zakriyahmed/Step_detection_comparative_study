@@ -1,0 +1,10 @@
+Staring logs
+
+
+
+ 0 
+
+
+Epoch: 0,    Loss: 0.3358657743109502
+name 'root' is not defined
+Interrupted. Saving model

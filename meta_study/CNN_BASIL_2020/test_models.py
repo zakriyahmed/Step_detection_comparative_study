@@ -11,14 +11,13 @@ from dataloader import CNNDataloader
 
 
 class Test():
-    def __init__(self,root,device,learning_rate,epochs,during_training=False,individuals=None) -> None:
+    def __init__(self,root,device,model_name,during_training=False,individuals=None) -> None:
         self.root = root
         self.device = device
-        self.epochs = epochs
         self.during_training = during_training
-        self.learning_rate = learning_rate
         self.window_size = 160
         self.individuals = individuals
+        self.model_name = model_name
         if self.during_training==True:
             self.stride = 160
         else:
@@ -38,10 +37,10 @@ class Test():
         self.activity = self.dataset.activity
         self.sensor_labels = self.dataset.sensor_labels
         self.dataloader = DataLoader(self.dataset,batch_size=1,shuffle=False)
-        self.load()
+        self.load(self.model_name)
 
-    def load(self):
-        self.model = torch.load(f"BASIL_2020_{self.epochs}_epochs.pt")
+    def load(self,name):
+        self.model = torch.load(name)
 
     def test(self):
         sigmoid = nn.Sigmoid()
