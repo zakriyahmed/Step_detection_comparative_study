@@ -83,7 +83,7 @@ if __name__=='__main__':
     epochs = 30
     for keys,values in test_set.items():
         print("\n\n",keys,"\n\n")
-        train_individuals,test_individuals = train_test(test_set[0])
+        train_individuals,test_individuals = train_test(test_set[1])
 
         run(train_individuals,test_individuals,30)
 
